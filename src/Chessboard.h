@@ -35,7 +35,7 @@ public:
 		ofSetLineWidth(0.0f);
 		ofSetColor(color);	
 		ofFill();	
-		ofRect(0,0,projectorWidth,projectorHeight);
+		ofDrawRectangle(0,0,projectorWidth,projectorHeight);
 		float xstep = projectorWidth / chessboardSizeX * scale;
 		float ystep = projectorHeight / chessboardSizeY * scale;	
 		//float xInset = (projectorWidth - (projectorWidth * scale)) / 2.0f;
@@ -48,7 +48,7 @@ public:
 					ofSetColor(0);
 				else
 					ofSetColor(color);
-				ofRect(xInset + xstep * i, yInset + ystep * j, xstep, ystep);
+				ofDrawRectangle(xInset + xstep * i, yInset + ystep * j, xstep, ystep);
 			}
 		}	
 		ofPopStyle();

@@ -45,7 +45,7 @@ public:
 			ofLog(OF_LOG_ERROR,"Please open the kinect prior to setting the RGBDcamWrapper");
 			return colorImage;
 		}
-		colorImage.setFromPixels(backend->getPixelsRef());
+		colorImage.setFromPixels(backend->getPixels());
         if (mirrorHoriz || mirrorVert) {
             colorImage.mirror(mirrorVert, mirrorHoriz);
             colorImage.flagImageChanged();

@@ -359,7 +359,7 @@ void	KinectProjectorCalibration::drawReprojectedPointsDebug(float x, float y, fl
 	for (int i = 0; i < worldCoordinatesChessboardBuffer.size(); i++) {
 		vector<ofVec2f> points = project(worldCoordinatesChessboardBuffer[i],0);
 		for (int j = 0; j < points.size(); j++) {
-			ofCircle(points[j].x, points[j].y, 8);
+			ofDrawCircle(points[j].x, points[j].y, 8);
 			ofDrawBitmapStringHighlight(ofToString(j),points[j].x, points[j].y);
 		}
 		
@@ -385,7 +385,7 @@ void	KinectProjectorCalibration::drawProcessedInputDebug(float x, float y, float
 		ofFill();
 		int lastElement = kinectCoordinatesChessboardBuffer.size()-1;
 		for (int i = 0; i < kinectCoordinatesChessboardBuffer[lastElement].size(); i++) {
-			ofCircle(kinectCoordinatesChessboardBuffer[lastElement][i].x,kinectCoordinatesChessboardBuffer[lastElement][i].y,10);
+			ofDrawCircle(kinectCoordinatesChessboardBuffer[lastElement][i].x,kinectCoordinatesChessboardBuffer[lastElement][i].y,10);
 		}
 	}		
 	if (stableFrom != -1)

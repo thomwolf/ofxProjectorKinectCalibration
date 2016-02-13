@@ -5,7 +5,6 @@
 #include "ofxCv.h"
 
 #include "ofxUI.h"
-#include "ofxSecondWindow.h"
 
 #include "ofxKinect.h"
 #include "RGBDCamCalibWrapperOfxKinect.h"
@@ -19,9 +18,11 @@ class ofApp : public ofBaseApp{
 
 	public:
 		void setup();
+ //   void setupGui();
 		void update();
 		void draw();
-        void exit();
+    void drawProj(ofEventArgs & args);
+      void exit();
 
 		void keyPressed(int key);
 		void keyReleased(int key);
@@ -33,7 +34,15 @@ class ofApp : public ofBaseApp{
 		void dragEvent(ofDragInfo dragInfo);
 		void gotMessage(ofMessage msg);
     
-    private:
+    // gui
+    void setupGui();
+    ofxUISuperCanvas *          gui;
+    ofxUISuperCanvas *			guiImageSettings;
+    void guiEvent(ofxUIEventArgs &e);
+    void guiUpdateLabels();
+    //ofxPanel gui;
+
+private:
         
         // kinect & the wrapper
         
@@ -62,14 +71,9 @@ class ofApp : public ofBaseApp{
         int                         projectorWidth;
         int                         projectorHeight;
         
-        // gui
-        void setupGui();
-        ofxUISuperCanvas *          gui;
-        ofxUISuperCanvas *			guiImageSettings;
-        void guiEvent(ofxUIEventArgs &e);
-        void guiUpdateLabels();
-        
+        ofParameterGroup labels;
+    
         // second window
-        ofxSecondWindow             secondWindow;
+//        ofxSecondWindow             secondWindow;
 		
 };

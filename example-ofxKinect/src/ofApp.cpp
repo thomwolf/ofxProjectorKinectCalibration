@@ -12,11 +12,11 @@ void ofApp::setup(){
 	ofSetVerticalSync(true);
     ofSetLogLevel(OF_LOG_VERBOSE);
     ofSetLogLevel("ofThread", OF_LOG_WARNING);
-    ofSetWindowTitle("Kinect Projector Calibration demo");
+ //   ofSetWindowTitle("Kinect Projector Calibration demo");
 	
 	// settings and defaults
-	projectorWidth = 1920;
-	projectorHeight = 1080;
+	projectorWidth = 800;
+	projectorHeight = 680;
 	enableCalibration = false;
 	enableTestmode	  = false;
 	
@@ -59,7 +59,7 @@ void ofApp::setup(){
     //kinectProjectorOutput.load("kinectProjector.yml");
     
     // setup the second window
-    secondWindow.setup("Projector", 500, 50, projectorWidth, projectorHeight, false);
+//    secondWindow.setup("Projector", 500, 50, projectorWidth, projectorHeight, false);
     
     // setup the gui
     setupGui();
@@ -69,11 +69,11 @@ void ofApp::setup(){
 void ofApp::update(){
     
 	kinect.update();
-	kinectColorImage.setFromPixels(kinect.getPixelsRef());
+	kinectColorImage.setFromPixels(kinect.getPixels());
 	convertColor(kinectColorImage, thresholdedKinect, CV_RGB2GRAY);
 	ofxCv::threshold(thresholdedKinect, chessboardThreshold);
 	thresholdedKinect.update();
-	kinectDepthImage.setFromPixels(kinect.getDepthPixelsRef());
+	kinectDepthImage.setFromPixels(kinect.getDepthPixels());
 	
     // if calibration active
     if (enableCalibration) {
@@ -102,7 +102,6 @@ void ofApp::update(){
 
 //--------------------------------------------------------------
 void ofApp::draw(){
-    
 	ofBackground(0);
 	ofSetColor(255);
 	
@@ -114,18 +113,12 @@ void ofApp::draw(){
 	//if calibrating, then we draw our fast check results here
 	if (enableCalibration) {
 		
-		// draw the chessboard to our second window
-		secondWindow.begin();
-		ofClear(0);
-		kinectProjectorCalibration.drawChessboard();
-		secondWindow.end();
-		
 		ofTranslate(0,40);
 		vector<ofVec2f> pts = kinectProjectorCalibration.getFastCheckResults();
 		for (int i = 0; i < pts.size(); i++) {
 			ofSetColor(0,255,0);
 			ofFill();
-			ofCircle(pts[i].x/2.0, pts[i].y / 2.0, 5);
+			ofDrawCircle(pts[i].x/2.0, pts[i].y / 2.0, 5);
 			ofNoFill();
 		}
 		ofTranslate(0,-40);
@@ -154,8 +147,22 @@ void ofApp::draw(){
 		ofScale(2.0, 2.0);
 		ofTranslate(-(320+20), -(20+240+20+40+20));
 		
-		//draw the calibrated contours to our second window
-		secondWindow.begin();
+	}
+	ofTranslate(-320,0);
+	ofSetColor(255);
+	
+    gui->draw();
+}
+//--------------------------------------------------------------
+void ofApp::drawProj(ofEventArgs & args){
+    
+	//if calibrating, then we draw our fast check results here
+	if (enableCalibration) {
+		
+		// draw the chessboard to our second window
+		ofClear(0);
+		kinectProjectorCalibration.drawChessboard();
+	} else if (enableTestmode) {
 		ofClear(0);
 		ofSetColor(255, 190, 70);
 		
@@ -176,16 +183,9 @@ void ofApp::draw(){
 			
 		}
 		ofSetColor(255);
-		secondWindow.end();
 	} else {
-		secondWindow.begin();
 		ofBackground(255);
-		secondWindow.end();
 	}
-	ofTranslate(-320,0);
-	ofSetColor(255);
-	
-    //gui->draw();
 }
 
 //--------------------------------------------------------------

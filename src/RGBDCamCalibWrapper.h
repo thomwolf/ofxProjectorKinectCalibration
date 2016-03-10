@@ -34,5 +34,9 @@ public:
 
 	//coordinate getters
 	virtual ofPoint				getWorldFromRgbCalibrated(ofPoint p, bool mirrorHoriz = false, bool mirrorVert = false)= 0; ///
-
+	virtual ofPoint				getWorldFromRgbCalibratedXYZ(ofPoint p, bool mirrorHoriz = false, bool mirrorVert = false)= 0; ///
+	virtual float				getZeroPlanePixelSize()= 0; ///
+    virtual float               getZeroPlaneDistance()= 0; ///
+    virtual float               getSensorEmitterDistance()= 0; ///
+    virtual float               getConstantShift()= 0; ///
 };

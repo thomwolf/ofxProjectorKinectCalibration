@@ -18,8 +18,8 @@ KinectProjectorCalibration::KinectProjectorCalibration() {
 	b_CV_CALIB_CB_ADAPTIVE_THRESH = true;
 	b_CV_CALIB_CB_NORMALIZE_IMAGE = false;
 	b_CV_CALIB_CB_FAST_CHECK = true;
-	projectorResolutionX = 1920;
-	projectorResolutionY = 1080;
+	projectorResolutionX = 800;
+	projectorResolutionY = 600;
 	chessboardBlocksX = 8;
 	chessboardBlocksY = 6;
 	reprojError = -1;
@@ -120,7 +120,7 @@ void	KinectProjectorCalibration::addCurrentFrame(){
 		for (int i = 0; i < pointBuf.size(); i++) {
 			//kinect & world cooords
 			ofVec2f kinectCoords = ofVec2f(pointBuf[i].x, pointBuf[i].y);
-			ofVec3f worldCoords = kinect->getWorldFromRgbCalibrated(kinectCoords);
+			ofVec3f worldCoords = kinect->getWorldFromRgbCalibrated(kinectCoords, mirrorHoriz, mirrorVert);
 			if (worldCoords.z <= 0.01) { 
 				valid = false;
 				break;
@@ -132,6 +132,7 @@ void	KinectProjectorCalibration::addCurrentFrame(){
 
 			//chessboard coords
 			imageCoordinatesChessboard.push_back(Point2f(imageCoordinatesChessboardInternal[i].x, imageCoordinatesChessboardInternal[i].y));
+            cout << "chessboard i: "<< i << " kinectCoords: "<< kinectCoords << " worldCoords: " << worldCoords << " imageCoordinatesChessboardInternal: " << imageCoordinatesChessboardInternal[i] << endl;
 		}
 		if (valid) {
 			//add to our list of valid points
@@ -190,6 +191,8 @@ bool	KinectProjectorCalibration::calibrate()
 	//setup intrinsics
 	intrinsics.setup(cameraMatrix, cv::Size(projectorResolutionX, projectorResolutionY));
 
+	//get ROI of kinect from projector
+
 	//calculate individual vieuws reprojection error
 	int totalPoints = 0;
 	double totalErr = 0;		
@@ -216,9 +219,6 @@ bool	KinectProjectorCalibration::calibrate()
 	cout << "Principal point: " << intrinsics.getPrincipalPoint() << endl;	
 	cout << "Reprojection Error " << reprojError << endl;
 
-	//save
-	save("kinectProjector.yml",true);
-	
 	return true;
 }
 
@@ -366,6 +366,7 @@ void	KinectProjectorCalibration::drawReprojectedPointsDebug(float x, float y, fl
 	}
 	ofPopMatrix();
 	ofPopStyle();
+	ofSetColor(255,255,255,255);
 }
 
 void	KinectProjectorCalibration::drawProcessedInputDebug(float x, float y, float width, float height)

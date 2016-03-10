@@ -18,7 +18,7 @@ class KinectProjectorOutput {
 		void setup(RGBDCamCalibWrapper* _kinect, int _projectorResolutionX, int _projectorResolutionY);
 		
 		//project functions
-		ofPoint			projectFromDepthXY(const ofPoint o) const;
+		ofPoint			projectFromDepthXYZ(const ofPoint o) const;
 		ofVec2f			project(const Point3f o) const;
 		vector<ofVec2f> project(vector<Point3f> src, int i) const;
 		vector<ofPoint> project(vector<ofPoint> src, int i) const;
@@ -33,6 +33,7 @@ class KinectProjectorOutput {
 		float	getReprojectionError() const;
         void    setMirrors(bool horizontal, bool vertical);
 
+        ofCamera            camera;
 
 
 	protected:
@@ -51,6 +52,6 @@ class KinectProjectorOutput {
 		vector<Mat>			boardRotations, boardTranslations;	
 		Intrinsics			intrinsics;
 		ofMatrix4x4			projectionMatrix;		
-		ofMatrix4x4			modelMatrix;		
+		ofMatrix4x4			modelMatrix;
 };
-	
+

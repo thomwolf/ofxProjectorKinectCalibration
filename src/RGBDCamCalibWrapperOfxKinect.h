@@ -64,4 +64,45 @@ public:
 		return backend->getWorldCoordinateAt(p.x, p.y);
 	}
 
+	ofPoint	getWorldFromRgbCalibratedXYZ(ofPoint p, bool mirrorHoriz, bool mirrorVert) {
+		if (!ready) {
+			ofLog(OF_LOG_ERROR,"Please open the kinect prior to setting the RGBDcamWrapper");
+			return ofPoint(0,0);
+		}
+        if (mirrorHoriz) p.x = 640 - p.x;
+        if (mirrorVert) p.y = 480 - p.y;
+		return backend->getWorldCoordinateAt(p.x, p.y, p.z);
+	}
+    
+    float getZeroPlanePixelSize(){
+		if (!ready) {
+			ofLog(OF_LOG_ERROR,"Please open the kinect prior to setting the RGBDcamWrapper");
+			return 0;
+		}
+		return backend->getZeroPlanePixelSize();
+	}
+
+    float  getZeroPlaneDistance(){
+		if (!ready) {
+			ofLog(OF_LOG_ERROR,"Please open the kinect prior to setting the RGBDcamWrapper");
+			return 0;
+		}
+		return backend->getZeroPlaneDistance();
+	}
+    float  getSensorEmitterDistance(){
+		if (!ready) {
+			ofLog(OF_LOG_ERROR,"Please open the kinect prior to setting the RGBDcamWrapper");
+			return 0;
+		}
+		return backend->getSensorEmitterDistance();
+	}
+    float  getConstantShift(){
+		if (!ready) {
+			ofLog(OF_LOG_ERROR,"Please open the kinect prior to setting the RGBDcamWrapper");
+			return 0;
+		}
+		return backend->getConstantShift();
+	}
+    
+    
 };

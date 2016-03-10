@@ -8,8 +8,8 @@ using namespace ofxCv ;
 using namespace cv;
 
 KinectProjectorOutput::KinectProjectorOutput() {	
-	projectorResolutionX = 1280;
-	projectorResolutionY = 800;
+	projectorResolutionX = 800;
+	projectorResolutionY = 600;
 	reprojError = -1;
 	isReady = false;
 }
@@ -25,17 +25,30 @@ bool KinectProjectorOutput::isCalibrationReady() {
 	return isReady;
 }
 
-ofPoint KinectProjectorOutput::projectFromDepthXY(const ofPoint o) const {
+ofPoint KinectProjectorOutput::projectFromDepthXYZ(const ofPoint o) const {
 	if (!isReady) return ofPoint(0,0);
-	ofPoint ptWorld = kinect->getWorldFromRgbCalibrated(o, mirrorHoriz, mirrorVert);
-	vector<cv::Point3f> vo;
-	vo.push_back(cv::Point3f(ptWorld.x, ptWorld.y, ptWorld.z));	
+	ofPoint ptWorld = kinect->getWorldFromRgbCalibratedXYZ(o, mirrorHoriz, mirrorVert);
+	vector<Point3f> vo;
+	vo.push_back(Point3f(ptWorld.x, ptWorld.y, ptWorld.z));
 	Mat mt = boardTranslations[0];
 	Mat mr = boardRotations[0];	
 	vector<Point2f> projected;		
-	projectPoints(Mat(vo), mr, mt, cameraMatrix, distCoeffs, projected);	
+	projectPoints(vo, mr, mt, cameraMatrix, distCoeffs, projected);
 	return toOf(projected[0]);
 }
+
+//vector<ofVec2f> KinectProjectorCalibration::project(vector<Point3f> wrldSrc, int i) const {
+//	if (!calibrated)  { vector<ofVec2f> v; v.push_back(ofVec2f(0,0)); return v; }
+//	Mat mt = boardTranslations[0];
+//	Mat mr = boardRotations[0];
+//	vector<Point2f> projected;
+//	projectPoints(wrldSrc, mr, mt, cameraMatrix, distCoeffs, projected);
+//	vector<ofVec2f> projectedOF;
+//	for (int i = 0; i < projected.size(); i++) {
+//		projectedOF.push_back(toOf(projected[i]));
+//	}
+//	return projectedOF;
+//}
 
 ofVec2f KinectProjectorOutput::project(const Point3f o) const {
 	if (!isReady) return ofVec2f(0,0);
@@ -105,6 +118,9 @@ void KinectProjectorOutput::setMirrors(bool horizontal, bool vertical) {
 }
 
 bool KinectProjectorOutput::load(string path, bool absolute) {
+    isReady = false;
+    boardRotations.clear();
+    boardTranslations.clear();
     FileStorage fs(ofToDataPath(path, absolute), FileStorage::READ);
     cv::Mat	rvec, tvec;
     fs["intrisics"] >> cameraMatrix;
@@ -118,6 +134,14 @@ bool KinectProjectorOutput::load(string path, bool absolute) {
     boardRotations.push_back(rvec);
     boardTranslations.push_back(tvec);
     distCoeffs = Mat::zeros(8, 1, CV_64F);
+    
+    // Setup Camera
+    float fov=intrinsics.getFov().y;
+    double aspectRatio = intrinsics.getAspectRatio();
+    
+    camera.setFov(fov);
+    camera.setAspectRatio(aspectRatio);
+    camera.setTransformMatrix(modelMatrix);
 
     isReady = true;
 	return true;

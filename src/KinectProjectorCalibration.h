@@ -53,8 +53,9 @@ class KinectProjectorCalibration {
 		int		getDatabaseSize();
         void    setStabilityTimeInMs(int stabilityTime);
         void    setChessboardTranslation(float x, float y);
-        void    setMirrors(bool horizontal, bool vertical);
-
+        void    setMirrors(bool horizontal, bool vertical) ;
+       // ofMatrix4x4 getProjMatrix() const;
+    
 		//Gui stuff
 		void	drawChessboard();
 		void	drawChessboardDebug(float x, float y, float width, float height);

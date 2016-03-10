@@ -20,8 +20,8 @@ private:
 
 public:
 	Chessboard() {
-		projectorWidth = 1920;
-		projectorHeight = 1080;
+		projectorWidth = 800;
+		projectorHeight = 600;
 		chessboardSizeX = 8;
 		chessboardSizeY = 6;
         chessboardTranslateX = 0;

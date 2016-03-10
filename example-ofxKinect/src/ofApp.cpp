@@ -52,11 +52,13 @@ void ofApp::setup(){
 	kinectProjectorCalibration.chessboardSize = 100;
 	kinectProjectorCalibration.chessboardColor = 175;
 	kinectProjectorCalibration.setStabilityTimeInMs(500);
+	kinectProjectorCalibration.setMirrors(true, true);
 	maxReprojError = 2.0f;
 	
     // sets the output
     kinectProjectorOutput.setup(kinectWrapper, projectorWidth, projectorHeight);
-    //kinectProjectorOutput.load("kinectProjector.yml");
+ 	kinectProjectorOutput.setMirrors(true, true);
+   //kinectProjectorOutput.load("kinectProjector.yml");
     
     // setup the second window
 //    secondWindow.setup("Projector", 500, 50, projectorWidth, projectorHeight, false);
@@ -165,7 +167,8 @@ void ofApp::drawProj(ofEventArgs & args){
 	} else if (enableTestmode) {
 		ofClear(0);
 		ofSetColor(255, 190, 70);
-		
+		cout <<"size " << contourFinder.size() << endl;
+		ofPoint cent = ofPoint(projectorWidth/2, projectorHeight/2);
 		for (int i = 0; i < contourFinder.size(); i++) {
 			
 			ofPolyline blobContour = contourFinder.getPolyline(i);
@@ -173,6 +176,7 @@ void ofApp::drawProj(ofEventArgs & args){
 				blobContour.close();
 			}
 			
+			if (!blobContour.inside(cent)) {
 			ofBeginShape();
 			for (int j = 0; j < blobContour.size() - 1; j++) {
 				ofPoint currVertex = kinectProjectorOutput.projectFromDepthXY(blobContour[j]);
@@ -180,6 +184,7 @@ void ofApp::drawProj(ofEventArgs & args){
 				
 			}
 			ofEndShape();
+			}
 			
 		}
 		ofSetColor(255);

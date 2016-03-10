@@ -10,11 +10,11 @@
 #include "ofxOpenCv.h"
 
 #include "Chessboard.h"
-#include "RGBDCamCalibWrapper.h"
+//#include "RGBDCamCalibWrapper.h"
 #include "KinectProjectorCalibration.h"
 #include "KinectProjectorOutput.h"
 
 //pick your backend
 //#include "RGBDCamCalibWrapperOfxKinectNUI.h"
-//#include "RGBDCamCalibWrapperOfxKinect.h"
+#include "RGBDCamCalibWrapperOfxKinect.h"
 //#include "RGBDCamCalibWrapperOfxOpenNi.h"

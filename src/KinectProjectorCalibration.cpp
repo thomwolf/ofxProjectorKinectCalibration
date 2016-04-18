@@ -23,6 +23,8 @@ KinectProjectorCalibration::KinectProjectorCalibration() {
 	chessboardBlocksX = 8;
 	chessboardBlocksY = 6;
 	reprojError = -1;
+    mirrorHoriz = false;
+    mirrorVert = false;
 	//not ready yet, first need to call setup(..)
 	isReady = false;
 	calibrated = false;
@@ -121,7 +123,7 @@ void	KinectProjectorCalibration::addCurrentFrame(){
 			//kinect & world cooords
 			ofVec2f kinectCoords = ofVec2f(pointBuf[i].x, pointBuf[i].y);
 			ofVec3f worldCoords = kinect->getWorldFromRgbCalibrated(kinectCoords, mirrorHoriz, mirrorVert);
-			if (worldCoords.z <= 0.01) { 
+			if (worldCoords.z <= 0.01) {
 				valid = false;
 				break;
 			}

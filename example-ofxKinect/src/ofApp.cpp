@@ -52,13 +52,13 @@ void ofApp::setup(){
 	kinectProjectorCalibration.chessboardSize = 100;
 	kinectProjectorCalibration.chessboardColor = 175;
 	kinectProjectorCalibration.setStabilityTimeInMs(500);
-	kinectProjectorCalibration.setMirrors(true, true);
+	kinectProjectorCalibration.setMirrors(false, false);
 	maxReprojError = 2.0f;
 	
     // sets the output
     kinectProjectorOutput.setup(kinectWrapper, projectorWidth, projectorHeight);
- 	kinectProjectorOutput.setMirrors(true, true);
-   //kinectProjectorOutput.load("kinectProjector.yml");
+ 	kinectProjectorOutput.setMirrors(false, false);
+    kinectProjectorOutput.load("kinectProjector.yml");
     
     // setup the second window
 //    secondWindow.setup("Projector", 500, 50, projectorWidth, projectorHeight, false);
@@ -167,26 +167,17 @@ void ofApp::drawProj(ofEventArgs & args){
 	} else if (enableTestmode) {
 		ofClear(0);
 		ofSetColor(255, 190, 70);
-		cout <<"size " << contourFinder.size() << endl;
-		ofPoint cent = ofPoint(projectorWidth/2, projectorHeight/2);
-		for (int i = 0; i < contourFinder.size(); i++) {
-			
-			ofPolyline blobContour = contourFinder.getPolyline(i);
-			if(!blobContour.isClosed()){
-				blobContour.close();
-			}
-			
-			if (!blobContour.inside(cent)) {
-			ofBeginShape();
-			for (int j = 0; j < blobContour.size() - 1; j++) {
-				ofPoint currVertex = kinectProjectorOutput.projectFromDepthXY(blobContour[j]);
-				ofVertex(currVertex.x, currVertex.y);
-				
-			}
-			ofEndShape();
-			}
-			
+		Point3f wrldcoord[4] = {Point3f(-105.68, 60.8459, 922), Point3f(65.7467, 60.8459, 922), Point3f(65.7467, 170.084, 823), Point3f(-105.68, 170.084, 823)};
+		ofPoint currVertex;
+		
+		ofBeginShape();
+		for (int i = 0; i<4; i++){
+			currVertex = kinectProjectorOutput.project(wrldcoord[i]);
+			ofVertex(currVertex.x, currVertex.y);
+			cout << "chessboard: i="<< i<< " worldCoords: " << wrldcoord[i] << " Projected coord: " << currVertex << endl;
 		}
+		ofEndShape();
+		
 		ofSetColor(255);
 	} else {
 		ofBackground(255);
@@ -273,6 +264,7 @@ void ofApp::setupGui() {
 	gui->addWidgetDown(new ofxUILabel("Mode", OFX_UI_FONT_MEDIUM));
 	gui->addSpacer(length, 2);
 	gui->addWidgetDown(new ofxUIToggle("Activate calibration mode", &enableCalibration, dim, dim));
+	gui->addWidgetDown(new ofxUIButton("Save calibration", false, dim, dim));
 	gui->addWidgetDown(new ofxUIToggle("Activate test mode", &enableTestmode, dim, dim));
 	
 	gui->addWidgetDown(new ofxUILabel(" ", OFX_UI_FONT_MEDIUM));
@@ -359,7 +351,10 @@ void ofApp::guiEvent(ofxUIEventArgs &e) {
 	} else if (name == "Activate calibration mode") {
 		ofxUIButton* b = (ofxUIButton*)e.widget;
 		if(b->getValue())  enableTestmode = false;
-	} else if (name == "Kinect tilt angle") {
+	}  else if (name == "Save calibration") {
+		ofxUIButton* b = (ofxUIButton*)e.widget;
+		if(b->getValue()) kinectProjectorCalibration.save("kinectProjector.yml", true);
+	} if (name == "Kinect tilt angle") {
 		ofxUISlider *slider = (ofxUISlider *) e.widget;
 		kinect.setCameraTiltAngle(slider->getValue());
 	} else if (name == "Chessboard position offset") {

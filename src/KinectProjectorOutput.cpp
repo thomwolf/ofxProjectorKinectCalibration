@@ -12,6 +12,9 @@ KinectProjectorOutput::KinectProjectorOutput() {
 	projectorResolutionY = 600;
 	reprojError = -1;
 	isReady = false;
+    mirrorHoriz = false;
+    mirrorVert = false;
+
 }
 
 

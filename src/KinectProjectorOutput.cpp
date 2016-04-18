@@ -37,6 +37,18 @@ ofPoint KinectProjectorOutput::projectFromDepthXYZ(const ofPoint o) const {
 	return toOf(projected[0]);
 }
 
+ofPoint KinectProjectorOutput::projectFromDepthXY(const ofPoint o) const {
+	if (!isReady) return ofPoint(0,0);
+	ofPoint ptWorld = kinect->getWorldFromRgbCalibrated(o, mirrorHoriz, mirrorVert);
+	vector<Point3f> vo;
+	vo.push_back(Point3f(ptWorld.x, ptWorld.y, ptWorld.z));
+	Mat mt = boardTranslations[0];
+	Mat mr = boardRotations[0];
+	vector<Point2f> projected;
+	projectPoints(vo, mr, mt, cameraMatrix, distCoeffs, projected);
+	return toOf(projected[0]);
+}
+
 //vector<ofVec2f> KinectProjectorCalibration::project(vector<Point3f> wrldSrc, int i) const {
 //	if (!calibrated)  { vector<ofVec2f> v; v.push_back(ofVec2f(0,0)); return v; }
 //	Mat mt = boardTranslations[0];
@@ -107,6 +119,44 @@ void	KinectProjectorOutput::unloadCalibratedView(){
 	glMatrixMode(GL_MODELVIEW);
 }
 
+//----------------------------------------
+ofVec2f KinectProjectorOutput::worldToScreen(ofVec3f WorldXYZ) const {
+
+	if (!isReady) return ofVec2f(0,0);
+    float nearDist = 500;
+    float farDist = 2000;
+    
+    float w = intrinsics.getImageSize().width;
+    float h = intrinsics.getImageSize().height;
+    float fx = intrinsics.getCameraMatrix().at<double>(0, 0);
+    float fy = intrinsics.getCameraMatrix().at<double>(1, 1);
+    float cx = intrinsics.getPrincipalPoint().x;
+    float cy = intrinsics.getPrincipalPoint().y;
+    
+    ofMatrix4x4 ProjectionMatrix;
+    ProjectionMatrix.makeFrustumMatrix(
+                              nearDist * (-cx) / fx, nearDist * (w - cx) / fx,
+                              nearDist * (cy) / fy, nearDist * (cy - h) / fy,
+                              nearDist, farDist);
+//    ProjectionMatrix.makeFrustumMatrix(left,right,bottom,top,nearDist, farDist);
+//    ProjectionMatrix.translate(-lensOffset.x, -lensOffset.y, 0);
+
+    ofMatrix4x4 ModelViewMatrix;
+    ModelViewMatrix.makeIdentityMatrix(); //=    modelMatrix;//.getInverse();
+
+    ofMatrix4x4 ModelViewProjectionMatrix = ModelViewMatrix * ProjectionMatrix;
+
+    ofVec3f CameraXYZ = WorldXYZ * ModelViewProjectionMatrix;
+	ofVec3f ScreenXYZ;
+    
+	ScreenXYZ.x = (CameraXYZ.x + 1.0f) / 2.0f * w;//viewport.width + viewport.x;
+	ScreenXYZ.y = (1.0f - CameraXYZ.y) / 2.0f * h;//viewport.height + viewport.y;
+    
+	ScreenXYZ.z = CameraXYZ.z;
+    
+	return ScreenXYZ;
+    
+}
 float KinectProjectorOutput::getReprojectionError() const {
 	if (!isReady) return 0.0;
 	return reprojError;
@@ -138,10 +188,26 @@ bool KinectProjectorOutput::load(string path, bool absolute) {
     // Setup Camera
     float fov=intrinsics.getFov().y;
     double aspectRatio = intrinsics.getAspectRatio();
+    double* rm = rvec.ptr<double>(0);
+    double* tm = tvec.ptr<double>(0);
+    ofVec3f /*translation,*/ transcam;
+    ofQuaternion rotation, rotcam;
+    ofVec3f scale;
+    ofQuaternion so;
+    ofVec3f rvecof = ofVec3f(rm[0], -rm[1], -rm[2]);
+    ofVec3f translation = ofVec3f(tm[0], tm[1],tm[2]);
     
+    //modelMatrix.decompose(translation, rotation, scale,so);
+    rotation = ofQuaternion(rvecof.length()/M_PI*180, rvecof);
+    camera.setAutoDistance(false);
+    camera.resetTransform();
     camera.setFov(fov);
     camera.setAspectRatio(aspectRatio);
-    camera.setTransformMatrix(modelMatrix);
+    transcam = -rotation.inverse()*translation;
+    rotcam = rotation.inverse();
+    camera.setGlobalPosition(transcam);
+    camera.setGlobalOrientation(rotcam);
+   // camera.setTransformMatrix(modelMatrix);
 
     isReady = true;
 	return true;

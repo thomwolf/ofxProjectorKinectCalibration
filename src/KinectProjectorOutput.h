@@ -19,12 +19,13 @@ class KinectProjectorOutput {
 		
 		//project functions
 		ofPoint			projectFromDepthXYZ(const ofPoint o) const;
+        ofPoint			projectFromDepthXY(const ofPoint o) const;
 		ofVec2f			project(const Point3f o) const;
 		vector<ofVec2f> project(vector<Point3f> src, int i) const;
 		vector<ofPoint> project(vector<ofPoint> src, int i) const;
 		void			loadCalibratedView(); 
 		void			unloadCalibratedView();
-
+        ofVec2f         worldToScreen(ofVec3f WorldXYZ) const;
 		//load
 		bool	load(string path, bool absolute = false);
 		bool	isCalibrationReady();
@@ -33,7 +34,7 @@ class KinectProjectorOutput {
 		float	getReprojectionError() const;
         void    setMirrors(bool horizontal, bool vertical);
 
-        ofCamera            camera;
+        ofEasyCam            camera;
 
 
 	protected:

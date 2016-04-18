@@ -41,6 +41,8 @@ class ofApp : public ofBaseApp{
     void guiEvent(ofxUIEventArgs &e);
     void guiUpdateLabels();
     //ofxPanel gui;
+    shared_ptr<ofAppBaseWindow> projWindow;
+    
 
 private:
         
